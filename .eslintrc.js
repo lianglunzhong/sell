@@ -28,6 +28,8 @@ module.exports = {
     'semi': ['error', 'always'],
     'indent': 0,
     'space-before-function-paren': 0,
-    'space-before-blocks': 0
+    'space-before-blocks': 0,
+    'no-trailing-spaces': 0,
+    'skipBlankLines': true
   }
 }

@@ -37,7 +37,6 @@
         }).then(function(response) {
           if (response.body.status) {
             this.seller = response.body.data;
-            console.log(this.seller);
           }
         }, function(response) {
           console.log(response);
