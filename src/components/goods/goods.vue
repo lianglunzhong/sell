@@ -28,19 +28,23 @@
                 <div class="price">
                   <span class="now">￥{{food.price}}</span><span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <v-cartcontrol :food="food"></v-cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <v-cart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></v-cart>
+    <v-shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></v-shopcart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import Icon from '@/components/icon/icon';
-  import Cart from '@/components/shopcart/shopcart';
+  import ShopCart from '@/components/shopcart/shopcart';
+  import CartControl from '@/components/cartcontrol/cartcontrol';
   import BScroll from 'better-scroll';
 
   export default {
@@ -72,7 +76,8 @@
     },
     components: {
       'v-icon': Icon,
-      'v-cart': Cart
+      'v-shopcart': ShopCart,
+      'v-cartcontrol': CartControl
     },
     created() {
       this.$http.jsonp('http://127.0.0.1:8000/api/goods',
@@ -97,6 +102,7 @@
           click: true
         });
         this.foodsScroll = new BScroll(this.$refs.foods, {
+          click: true,
           probeType: 3
         });
 
@@ -214,4 +220,8 @@
               text-decoration: line-through
               font-size: 10px
               color: rgb(147, 153, 159)        
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 12px
 </style>
