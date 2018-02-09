@@ -37,11 +37,12 @@
         </li>
       </ul>
     </div>
-    <v-shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></v-shopcart>
+    <v-shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></v-shopcart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import EventBus from '../../common/js/EventBus';
   import Icon from '@/components/icon/icon';
   import ShopCart from '@/components/shopcart/shopcart';
   import CartControl from '@/components/cartcontrol/cartcontrol';
@@ -67,6 +68,18 @@
           }
         }
         return 0;
+      },
+      selectFoods: function() {
+        let foods = [];
+        this.goods.forEach(function(good, i) {
+          good.foods.forEach(function(food, j) {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
+        });
+
+        return foods;
       }
     },
     props: {
@@ -94,6 +107,13 @@
           }
         }, function(response) {
           console.log(response);
+      });
+
+      let self = this;
+      EventBus.$on('cart.add', function(el) {
+        self.$nextTick(function() {
+          self.$refs.shopcart.drop(el);
+        });
       });
     },
     methods: {
