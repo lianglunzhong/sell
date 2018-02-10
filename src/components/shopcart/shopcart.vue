@@ -1,49 +1,54 @@
 <template>
-  <div class="shopcart">
-    <div class="content" @click="toggleList">
-      <div class="content-left">
-        <div class="logo-wrapper">
-          <div class="logo" :class="{'highlight': totalCount > 0}">
-            <i class="icon-shopping_cart"></i>
+  <div>
+    <div class="shopcart">
+      <div class="content" @click="toggleList">
+        <div class="content-left">
+          <div class="logo-wrapper">
+            <div class="logo" :class="{'highlight': totalCount > 0}">
+              <i class="icon-shopping_cart"></i>
+            </div>
+            <div class="num" v-if="totalCount > 0">{{totalCount}}</div>
           </div>
-          <div class="num" v-if="totalCount > 0">{{totalCount}}</div>
+          <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div>
+          <div class="desc">另需配送费{{deliveryPrice}}元</div>
         </div>
-        <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div>
-        <div class="desc">另需配送费{{deliveryPrice}}元</div>
+        <div class="content-right" @click.stop.prevent="pay">
+          <div class="pay" :class="payClass">{{payDesc}}</div>
+        </div>
       </div>
-      <div class="content-right">
-        <div class="pay" :class="payClass">{{payDesc}}</div>
+      <div class="ball-container">
+        <template v-for="(ball, index) in balls">
+          <transition name="drop" :key="index" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+            <div class="ball" v-show="ball.show">
+              <div class="inner inner-hook"></div>
+            </div>
+          </transition>
+        </template>
       </div>
-    </div>
-    <div class="ball-container">
-      <template v-for="(ball, index) in balls">
-        <transition name="drop" :key="index" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
-          <div class="ball" v-show="ball.show">
-            <div class="inner inner-hook"></div>
+      <transition name="fold">
+        <div class="shopcart-list" v-show="listShow">
+          <div class="list-header">
+            <h1 class="title">购物车</h1>
+            <span class="empty" @click="empty">清空</span>
           </div>
-        </transition>
-      </template>
+          <div class="list-content" ref="listContent">
+            <ul>
+              <li class="food" v-for="(food, index) in selectFoods" :key="index">
+                <span class="name">{{food.name}}</span>
+                <div class="price">
+                  <span>￥{{food.price * food.count}}</span>
+                </div>
+                <div class="cartcontrol-wrapper">
+                  <v-cartcontrol :food="food"></v-cartcontrol>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </transition>
     </div>
-    <transition name="fold">
-      <div class="shopcart-list" v-show="listShow">
-        <div class="list-header">
-          <h1 class="title">购物车</h1>
-          <span class="empty">清空</span>
-        </div>
-        <div class="list-content" ref="listContent">
-          <ul>
-            <li class="food" v-for="(food, index) in selectFoods" :key="index">
-              <span class="name">{{food.name}}</span>
-              <div class="price">
-                <span>￥{{food.price * food.count}}</span>
-              </div>
-              <div class="cartcontrol-wrapper">
-                <v-cartcontrol :food="food"></v-cartcontrol>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click="hideList"></div>
     </transition>
   </div>
 </template>
@@ -215,6 +220,22 @@
         if (!this.fold) {
           this.listShow = this.fold;
         }
+      },
+      empty() {
+        this.selectFoods.forEach(function(food, i) {
+          food.count = 0;
+        });
+        this.fold = true;
+      },
+      hideList() {
+        this.fold = true;
+      },
+      pay() {
+        if (this.totalPrice < this.minPrice) {
+          return false;
+        }
+
+        console.log('总价为:' + this.totalPrice + '元');
       }
     },
     components: {
@@ -384,4 +405,17 @@
             position: absolute
             right: 0
             bottom: 6px
+  .list-mask
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    z-index: 40
+    background: rgba(7, 17, 27, 0.6)
+    background-filter: blur(10px)
+    &.fade-enter-active, &.fade-leave-active
+      transition: all .5s
+    &.fade-enter, &.fade-leave-to
+      opacity: 0
 </style>

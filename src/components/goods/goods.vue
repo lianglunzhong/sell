@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="goods">
     <div class="menu-wrapper" ref="menu">
       <ul>
@@ -15,7 +16,7 @@
         <li v-for="(item, index) in goods" :key="index" class="food-list food-list-hook">
           <h1 class="title">{{item.name}}</h1>
           <ul>
-            <li v-for="(food, index2) in item.foods" :key="index2" class="food-item">
+            <li v-for="(food, index2) in item.foods" :key="index2" @click.stop.prevent="selectFood(food)" class="food-item">
               <div class="icon">
                 <img width="57" height="57" :src="food.icon">
               </div>
@@ -39,6 +40,8 @@
     </div>
     <v-shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></v-shopcart>
   </div>
+  <v-food :food="selectedFood" ref="food"></v-food>
+</div>
 </template>
 
 <script type="text/ecmascript-6">
@@ -46,6 +49,7 @@
   import Icon from '@/components/icon/icon';
   import ShopCart from '@/components/shopcart/shopcart';
   import CartControl from '@/components/cartcontrol/cartcontrol';
+  import Food from '@/components/food/food';
   import BScroll from 'better-scroll';
 
   export default {
@@ -55,7 +59,8 @@
         msg: '我是Goods',
         goods: [],
         listHeight: [],
-        scrollY: 0
+        scrollY: 0,
+        selectedFood: {}
       };
     },
     computed: {
@@ -90,7 +95,8 @@
     components: {
       'v-icon': Icon,
       'v-shopcart': ShopCart,
-      'v-cartcontrol': CartControl
+      'v-cartcontrol': CartControl,
+      'v-food': Food
     },
     created() {
       this.$http.jsonp('http://127.0.0.1:8000/api/goods',
@@ -146,6 +152,10 @@
         let el = foodList[index];
 
         this.foodsScroll.scrollToElement(el, 300);
+      },
+      selectFood(food) {
+        this.selectedFood = food;
+        this.$refs.food.show();
       }
     }
   };
