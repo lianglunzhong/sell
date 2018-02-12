@@ -1,27 +1,30 @@
 <template>
     <div class="ratingselect">
       <div class="rating-type">
-        <span class="block positive" :class="{'active': selectType === 2}">{{desc.all}}<span class="count">57</span></span>
-        <span class="block positive" :class="{'active': selectType === 0}">{{desc.positive}}<span class="count">7</span></span>
-        <span class="block negative" :class="{'active': selectType === 1}">{{desc.negative}}<span class="count">17</span></span>
+        <span class="block positive" :class="{'active': selfType === 2}" @click="select(2)">{{desc.all}}<span class="count">{{ratings.length}}</span></span>
+        <span class="block positive" :class="{'active': selfType === 0}" @click="select(0)">{{desc.positive}}<span class="count">{{positives.length}}</span></span>
+        <span class="block negative" :class="{'active': selfType === 1}" @click="select(1)">{{desc.negative}}<span class="count">{{negative.length}}</span></span>
       </div>
-      <div class="switch">
+      <div class="switch" :class="{'on': selfContent}" @click="toggleContent">
         <span class="icon-check_circle"></span>
-        <span>只看有内容的评价</span>
+        <span class="text">只看有内容的评价</span>
       </div>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
-  // const POSITIVE = 0;
-  // const NEGATIVE = 1;
+  import EventBus from '../../common/js/EventBus';
+  const POSITIVE = 0;
+  const NEGATIVE = 1;
   const ALL = 2;
 
   export default {
     name: 'RatingSelect',
     data () {
       return {
-        msg: ''
+        msg: '',
+        selfType: this.selectType,
+        selfContent: this.onlyContent
       };
     },
     props: {
@@ -48,6 +51,40 @@
             negative: '不满意'
           };
         }
+      }
+    },
+    methods: {
+      select(type) {
+        if (this.selfType === type) {
+          return false;
+        } else {
+          this.selfType = type;
+          EventBus.$emit('ratingtype.select', type);
+        }
+      },
+      toggleContent() {
+        this.selfContent = !this.selfContent;
+        EventBus.$emit('content.toggle', this.selfContent);
+      }
+    },
+    computed: {
+      positives() {
+        return this.ratings.filter(function(rating) {
+          return rating.rateType === POSITIVE;
+        });
+      },
+      negative() {
+        return this.ratings.filter(function(rating) {
+          return rating.rateType === NEGATIVE;
+        });
+      }
+    },
+    watch: {
+      selectType: function(newVal, oldVal) {
+        this.selfType = newVal;
+      },
+      onlyContent: function(newVal, oldVal) {
+        this.selfContent = newVal;
       }
     }
   };
@@ -88,4 +125,19 @@
     .switch
       padding: 12px 18px
       line-height: 24px
+      border-bottom: 1px solid rgba(7, 17, 27, 0.1)
+      color: rgb(147, 153, 159)
+      font-size: 0
+      &.on
+        .icon-check_circle
+          color: #00c850
+      .icon-check_circle
+        display: inline-block
+        vertical-align: top
+        margin-right: 4px
+        font-size: 24px
+      .text
+        display: inline-block
+        vertical-align: top
+        font-size: 12px
 </style>
