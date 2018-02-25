@@ -80,12 +80,12 @@
       }
     },
     watch: {
-      selectType: function(newVal, oldVal) {
-        this.selfType = newVal;
-      },
-      onlyContent: function(newVal, oldVal) {
-        this.selfContent = newVal;
-      }
+      // selectType: function(newVal, oldVal) {
+      //   this.selfType = newVal;
+      // },
+      // onlyContent: function(newVal, oldVal) {
+      //   this.selfContent = newVal;
+      // }
     }
   };
 </script>
