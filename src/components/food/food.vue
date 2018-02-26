@@ -40,13 +40,13 @@
                   <span class="name">{{rating.username}}</span>
                   <img class="avatar" width="12" height="12" :src="rating.avatar">
                 </div>
-                <div class="time">{{rating.rateTime}}</div>
+                <div class="time">{{rating.rateTime | formatDate(rating.rateTime)}}</div>
                 <p class="text">
                   <span :class="{'icon-thumb_up': rating.rateType === 0, 'icon-thumb_down': rating.rateType === 1}"></span>{{rating.text}}
                 </p>
               </li>
             </ul>
-            <div class="no-rating" v-show="!food.ratings || !food.ratings.length"></div>
+            <div class="no-rating" v-show="!food.ratings || !food.ratings.length">暂无评价</div>
           </div>
         </div>
       </div>
@@ -55,13 +55,14 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import EventBus from '../../common/js/EventBus';
+  import formatDate from '../../common/js/date';
   import BScroll from 'better-scroll';
   import Vue from 'vue';
   import CartControl from '@/components/cartcontrol/cartcontrol';
   import Split from '@/components/split/split';
   import RatingSelect from '@/components/ratingselect/ratingselect';
-  import EventBus from '../../common/js/EventBus';
-
+  
   // const POSITIVE = 0;
   // const NEGATIVE = 1;
   const ALL = 2;
@@ -120,22 +121,27 @@
         }
       }
     },
-    create() {
+    created() {
       let self = this;
       EventBus.$on('ratingtype.select', function(type) {
-        console.log(type);
         self.selectType = type;
         self.$nextTick(() => {
           self.scroll.refresh();
         });
       });
+
       EventBus.$on('content.toggle', function(onlyContent) {
-        console.log(onlyContent);
         self.onlyContent = onlyContent;
         self.$nextTick(() => {
           self.scroll.refresh();
         });
       });
+    },
+    filters: {
+      formatDate(time) {
+        let date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd hh:mm');
+      }
     },
     components: {
       'v-cartcontrol': CartControl,
@@ -293,4 +299,8 @@
               color: rgb(0, 160, 220)
             .icon-thumb_down
               color: rgb(147, 153, 159)
+        .no-rating
+          padding: 16px 0
+          font-size: 12px
+          color: rgb(147, 153, 159)
 </style>
