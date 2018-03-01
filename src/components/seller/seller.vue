@@ -71,8 +71,7 @@
 <script type="text/ecmascript-6">
   import Star from '@/components/star/star';
   import Icon from '@/components/icon/icon';
-  // import EventBus from '../../common/js/EventBus';
-  // import formatDate from '../../common/js/date';
+  import { saveToLocal, loadFromLocal } from '../../common/js/store';
   import BScroll from 'better-scroll';
   import Split from '@/components/split/split';
 
@@ -80,7 +79,9 @@
     name: 'Seller',
     data () {
       return {
-        favorite: false
+        favorite: (() => {
+          return loadFromLocal(this.seller.id, 'favorite', false);
+        })()
       };
     },
     created() {
@@ -125,6 +126,7 @@
 
       toggleFavorite() {
         this.favorite = !this.favorite;
+        saveToLocal(this.seller.id, 'favorite', this.favorite);
       }
     },
     watch: {
@@ -203,7 +205,7 @@
               font-size: 24px
       .favorite
         position: absolute
-        right: 6px
+        right: 11px
         top: 18px
         width: 50px
         text-align: center

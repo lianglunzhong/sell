@@ -12,7 +12,9 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <router-view :seller="seller"></router-view>
+    <keep-alive>
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -26,7 +28,9 @@
     },
     data() {
       return {
-        seller: {}
+        seller: {
+          id: '12312'
+        }
       };
     },
     created() {
@@ -36,7 +40,9 @@
           jsonp: 'callback'
         }).then(function(response) {
           if (response.body.status) {
-            this.seller = response.body.data;
+            // this.seller = response.body.data;
+            // 相当于 extend方法 扩展  es6语法   vue推荐的给对象扩展属性方法
+            this.seller = Object.assign({}, this.seller, response.body.data);
           }
         }, function(response) {
           console.log(response);
